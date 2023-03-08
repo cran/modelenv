@@ -1,9 +1,11 @@
-14c2858c0ab934a4167900a6cc585808 *DESCRIPTION
-2038dd785aae425899aa35a685c72a65 *LICENSE
+a509c389d3167d8d41c5a5e741b840e6 *DESCRIPTION
+b3730ddca7f3f56faeafb435c1afed31 *LICENSE
 e08eae6d2205d4c00aa3d7d840cecf1a *NAMESPACE
+f8af2d86b0999a68cabfab490e4dde01 *NEWS.md
 3b8768b35cf39266b63b61795247467c *R/check.R
 5cad57fb6a5f1521388997c536079944 *R/env-get.R
 1c3dab8967bec8cf210914df058fc5e3 *R/env.R
+df6cc46bc7fae1a55b713f3d5065b35a *R/modelenv-package.R
 4459f55f12a0016e434286ffb31fe4bf *R/set_dependency.R
 b34c8dd8306ad528a46bbd7fb07e71e2 *R/set_encoding.R
 72dd975d40a5e1c7f6c84fb56852d99b *R/set_fit.R
@@ -14,11 +16,12 @@ e258665ddc16de0acbd7c7f178e3640a *R/set_model_mode.R
 d3564ab00cfa2ac4841ef39dbc3c16c7 *R/set_pred.R
 47dffb2bdb5065319c87d78d9c3f0386 *R/unsupervised_fit.R
 4ab26d037a5e56314c05b0dd381e5850 *R/unsupervised_spec.R
-46036beded8b56714c53ec1f80b8e856 *README.md
+e51f0735759a0de87c02b2190241f457 *README.md
 2bee24703992311c451993df9812069c *man/check_spec_mode_engine_val.Rd
 f3d53a81aa8d873938cfaf9a12f3dcdb *man/get_model_env.Rd
 7104811f59ff24b89d60b4a98c6b66e8 *man/is_unsupervised_fit.Rd
 55617b8e081581f60493985b6ea8db1f *man/is_unsupervised_spec.Rd
+d4abf7f94b44c146ddedef601ceb50a7 *man/modelenv-package.Rd
 6ba5884d79a17a30c9ebc89aa649589f *man/new_unsupervised_fit.Rd
 c51488337bdebdd5a1ec0ce6dbcfa9f8 *man/new_unsupervised_spec.Rd
 b652d75c96e7b8dd0cb0df0daa9de7cb *man/set_dependency.Rd
