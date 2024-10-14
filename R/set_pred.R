@@ -98,41 +98,50 @@ set_pred <- function(model, mode, eng, type, value) {
 get_pred_type <- function(model, type) {
   check_model_val(model)
   pred_name <- paste0(model, "_predict")
-  all_preds <- rlang::env_get(get_model_env(), pred_name)
+  all_preds <- env_get(get_model_env(), pred_name)
   vctrs::vec_slice(all_preds, all_preds$type == type)
 }
 
-check_pred_info <- function(pred_obj, type) {
+check_pred_info <- function(pred_obj, type, call = caller_env()) {
+  if (is_missing(pred_obj)) {
+    cli::cli_abort(
+      "Argument {.arg value} is missing, with no default.",
+      call = call
+    )
+  }
+
   if (all(type != pred_types)) {
-    rlang::abort(
-      glue::glue(
-        "The prediction type should be one of: ",
-        glue::glue_collapse(glue::glue("'{pred_types}'"), sep = ", ")
-      )
+    cli::cli_abort(
+      "The prediction type should be one of: {pred_types}.",
+      call = call
     )
   }
 
   exp_nms <- c("args", "func", "post", "pre")
   if (!isTRUE(all.equal(sort(names(pred_obj)), exp_nms))) {
-    rlang::abort(
-      glue::glue(
-        "The `predict` module should have elements: ",
-        glue::glue_collapse(glue::glue("`{exp_nms}`"), sep = ", ")
-      )
+    cli::cli_abort(
+      "The {.code predict} module should have elements: {.code {exp_nms}}.",
+      call = call
     )
   }
 
   if (!is.null(pred_obj$pre) & !is.function(pred_obj$pre)) {
-    rlang::abort("The `pre` module should be null or a function: ")
+    cli::cli_abort(
+      "The {.arg pre} module should be {.code NULL} or a function.",
+      call = call
+    )
   }
   if (!is.null(pred_obj$post) & !is.function(pred_obj$post)) {
-    rlang::abort("The `post` module should be null or a function: ")
+    cli::cli_abort(
+      "The {.arg post} module should be {.code NULL} or a function.",
+      call = call
+    )
   }
 
-  check_func_val(pred_obj$func)
+  check_func_val(pred_obj$func, call = call)
 
   if (!is.list(pred_obj$args)) {
-    rlang::abort("The `args` element should be a list.")
+    cli::cli_abort("The {.arg args} element should be a list.", call = call)
   }
 
   invisible(NULL)

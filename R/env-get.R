@@ -28,17 +28,16 @@ get_model_env <- function() {
 #' @export
 get_from_env <- function(items) {
   mod_env <- get_model_env()
-  rlang::env_get(mod_env, items, default = NULL)
+  env_get(mod_env, items, default = NULL)
 }
 
 #' @rdname get_model_env
 #' @export
 set_env_val <- function(name, value) {
-  if (length(name) != 1 || !is.character(name)) {
-    rlang::abort("`name` should be a single character value.")
-  }
+  check_string(name)
+
   mod_env <- get_model_env()
   x <- list(value)
   names(x) <- name
-  rlang::env_bind(mod_env, !!!x)
+  env_bind(mod_env, !!!x)
 }

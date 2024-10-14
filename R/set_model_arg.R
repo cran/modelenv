@@ -70,22 +70,20 @@ set_model_arg <- function(model, eng, exposed, original, func, has_submodel) {
 #' @export
 get_model_arg <- function(model, eng) {
   m_env <- get_model_env()
-  args <- rlang::env_get(m_env, paste0(model, "_args"))
+  args <- env_get(m_env, paste0(model, "_args"))
   args <- vctrs::vec_slice(args, args$engine == eng)
   args <- args[names(args) != "engine"]
   args
 }
 
-check_arg_val <- function(arg) {
-  if (rlang::is_missing(arg) || length(arg) != 1 || !is.character(arg)) {
-    rlang::abort("Please supply a character string for the argument.")
-  }
+check_arg_val <- function(arg, call = caller_env()) {
+  check_string(arg, call = call)
+
   invisible(NULL)
 }
 
-check_submodels_val <- function(has_submodel) {
-  if (!is.logical(has_submodel) || length(has_submodel) != 1) {
-    rlang::abort("The `submodels` argument should be a single logical.")
-  }
+check_submodels_val <- function(has_submodel, call = caller_env()) {
+  check_logical(has_submodel, call = call)
+
   invisible(NULL)
 }

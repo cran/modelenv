@@ -63,7 +63,7 @@ set_fit <- function(model, mode, eng, value) {
   )
 
   if (nrow(has_fit) > 0) {
-    rlang::abort(
+    cli::cli_abort(
       glue::glue(
         "The combination of '{eng}' and mode '{mode}' ",
         "already has a fit component for model '{model}'."
@@ -92,12 +92,12 @@ set_fit <- function(model, mode, eng, value) {
 get_fit <- function(model) {
   check_model_val(model)
   fit_name <- paste0(model, "_fit")
-  rlang::env_get(get_model_env(), fit_name)
+  env_get(get_model_env(), fit_name)
 }
 
-check_fit_info <- function(fit_obj) {
-  if (rlang::is_missing(fit_obj) || is.null(fit_obj)) {
-    rlang::abort("The `fit` module cannot be NULL.")
+check_fit_info <- function(fit_obj, call = caller_env()) {
+  if (is_missing(fit_obj) || is.null(fit_obj)) {
+    cli::cli_abort("The {.arg fit} module cannot be {.code NULL}.", call = call)
   }
 
   # check required data elements
@@ -105,11 +105,12 @@ check_fit_info <- function(fit_obj) {
   has_req_nms <- exp_nms %in% names(fit_obj)
 
   if (!all(has_req_nms)) {
-    rlang::abort(
-      glue::glue(
-        "The `fit` module should have elements: ",
-        glue::glue_collapse(glue::glue("`{exp_nms}`"), sep = ", ")
-      )
+    cli::cli_abort(
+      c(
+        "The {.code fit} module should have elements: {.code {exp_nms}}.",
+        "i" = "Use {.fn cli_vec} to specify vector truncation options if needed."
+      ),
+      call = call
     )
   }
 
@@ -118,76 +119,83 @@ check_fit_info <- function(fit_obj) {
   other_nms <- setdiff(names(fit_obj), exp_nms)
   has_opt_nms <- other_nms %in% opt_nms
   if (any(!has_opt_nms)) {
-    msg <- glue::glue(
-      "The `fit` module can only have optional elements: ",
-      glue::glue_collapse(glue::glue("`{opt_nms}`"), sep = ", ")
+    cli::cli_abort(
+      c(
+        "The {.code fit} module can only have optional elements:",
+        "i" = "Optional elements: {.code {opt_nms}}"
+      ),
+      call = call
     )
-
-    rlang::abort(msg)
   }
 
   if (any(other_nms == "data")) {
     data_nms <- names(fit_obj$data)
     if (length(data_nms) == 0 || any(data_nms == "")) {
-      rlang::abort("All elements of the `data` argument vector must be named.")
+      cli::cli_abort(
+        "All elements of the {.var data} argument vector must be named.",
+        call = call
+      )
     }
   }
 
-  check_interface_val(fit_obj$interface)
-  check_func_val(fit_obj$func)
+  check_interface_val(fit_obj$interface, call = call)
+  check_func_val(fit_obj$func, call = call)
 
   if (!is.list(fit_obj$defaults)) {
-    rlang::abort("The `defaults` element should be a list: ")
+    cli::cli_abort(
+      "The {.var defaults} element should be a list, \\
+      not {.obj_type_friendly {fit_obj$defaults}}.",
+      call = call
+    )
   }
 
   invisible(NULL)
 }
 
-check_interface_val <- function(x) {
+check_interface_val <- function(x, call = caller_env()) {
   exp_interf <- c("data.frame", "formula", "matrix")
   if (length(x) != 1 || !(x %in% exp_interf)) {
-    rlang::abort(
-      glue::glue(
-        "The `interface` element should have a single value of: ",
-        glue::glue_collapse(glue::glue("`{exp_interf}`"), sep = ", ")
-      )
+    cli::cli_abort(
+      c(
+        x = "The {.var interface} element should have a single value of:",
+        "*" = "{exp_interf}."
+      ),
+      call = call
     )
   }
   invisible(NULL)
 }
 
-check_func_val <- function(func) {
-  msg <-
-    paste(
-      "`func` should be a named vector with element 'fun' and the optional ",
-      "elements 'pkg', 'range', 'trans', and 'values'.",
-      "`func` and 'pkg' should both be single character strings."
-    )
+check_func_val <- function(func, call = caller_env()) {
+  msg <- "{.arg func} should be a named vector with element {.var fun} and \\
+         the optional elements {.var pkg}, {.var range}, {.var trans}, and \\
+         {.var values}. {.var func} and {.var pkg} should both be single \\
+         character strings."
+
+  if (is_missing(func) || all(is.null(sort(names(func))))) {
+    cli::cli_abort(msg, call = call)
+  }
 
   nms <- sort(names(func))
 
-  if (all(is.null(nms))) {
-    rlang::abort(msg)
-  }
-
   if (length(func) == 1) {
     if (isTRUE(any(nms != "fun"))) {
-      rlang::abort(msg)
+      cli::cli_abort(msg, call = call)
     }
   } else {
     # check for extra names:
     allow_nms <- c("fun", "pkg", "range", "trans", "values")
     not_allowed <- nms[!(nms %in% allow_nms)]
     if (length(not_allowed) > 0) {
-      rlang::abort(msg)
+      cli::cli_abort(msg, call = call)
     }
   }
 
   if (!is.character(func[["fun"]])) {
-    rlang::abort(msg)
+    cli::cli_abort(msg, call = call)
   }
   if (any(nms == "pkg") && !is.character(func[["pkg"]])) {
-    rlang::abort(msg)
+    cli::cli_abort(msg, call = call)
   }
 
   invisible(NULL)
